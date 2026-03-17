@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DealDesk — Your AI Assistant, Delivered in iMessage</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --navy: #0f1e35; --gold: #c9a84c; --gold-light: #e8c96a;
+      --cream: #f8f5ef; --muted: #7a8a9a; --text: #1a2030;
+      --surface: #ffffff; --border: rgba(15,30,53,0.1);
+    }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--text); overflow-x: hidden; }
+    section { padding: 5rem 2rem; }
+    .container { max-width: 1100px; margin: 0 auto; }
+
+    .nav { background: var(--navy); padding: 1.25rem 2rem; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; border-bottom: 0.5px solid rgba(255,255,255,0.06); }
+    .nav-logo { font-family: 'DM Serif Display', serif; color: #fff; font-size: 1.2rem; text-decoration: none; }
+    .nav-logo span { color: var(--gold); }
+    .nav-links { display: flex; gap: 2rem; }
+    .nav-links a { color: rgba(255,255,255,0.5); text-decoration: none; font-size: 0.88rem; transition: color 0.2s; }
+    .nav-links a:hover { color: #fff; }
+    .nav-cta { background: var(--gold); color: var(--navy); font-family: 'DM Sans', sans-serif; font-weight: 500; font-size: 0.85rem; padding: 9px 18px; border-radius: 8px; border: none; cursor: pointer; transition: background 0.2s; }
+    .nav-cta:hover { background: var(--gold-light); }
+
+    .hero { background: var(--navy); padding: 5rem 2rem 0; position: relative; overflow: hidden; }
+    .hero::before { content: ''; position: absolute; top: -80px; right: -80px; width: 400px; height: 400px; border-radius: 50%; border: 60px solid rgba(201,168,76,0.08); }
+    .hero::after { content: ''; position: absolute; bottom: 60px; left: -60px; width: 250px; height: 250px; border-radius: 50%; border: 40px solid rgba(201,168,76,0.05); }
+    .hero-inner { max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: end; }
+
+    .badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(201,168,76,0.15); border: 0.5px solid rgba(201,168,76,0.3); border-radius: 100px; padding: 6px 14px; font-size: 12px; font-weight: 500; color: var(--gold-light); margin-bottom: 1.5rem; letter-spacing: 0.04em; text-transform: uppercase; }
+    .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--gold); animation: pulse 2s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+    .hero h1 { font-family: 'DM Serif Display', serif; font-size: clamp(2.4rem, 5vw, 3.8rem); color: #fff; line-height: 1.1; margin-bottom: 1.25rem; }
+    .hero h1 em { color: var(--gold); font-style: italic; }
+    .hero p { font-size: 1.05rem; color: rgba(255,255,255,0.65); line-height: 1.7; margin-bottom: 1.25rem; max-width: 440px; }
+    .hero-cta { display: flex; flex-direction: column; gap: 0.75rem; margin-top: 1.75rem; }
+    .btn-primary { display: inline-block; background: var(--gold); color: var(--navy); font-family: 'DM Sans', sans-serif; font-weight: 500; font-size: 0.95rem; padding: 14px 28px; border-radius: 8px; border: none; cursor: pointer; width: fit-content; transition: background 0.2s, transform 0.1s; text-decoration: none; }
+    .btn-primary:hover { background: var(--gold-light); transform: translateY(-1px); }
+    .hero-note { font-size: 0.8rem; color: rgba(255,255,255,0.35); }
+
+    .imessage-pill { display: inline-flex; align-items: center; gap: 8px; background: rgba(0,122,255,0.15); border: 0.5px solid rgba(0,122,255,0.35); border-radius: 100px; padding: 7px 15px; font-size: 12px; font-weight: 500; color: #6ab0ff; }
+    .imessage-dot { width: 8px; height: 8px; border-radius: 50%; background: #007AFF; flex-shrink: 0; }
+
+    .phone-wrap { display: flex; justify-content: center; align-items: flex-end; padding-top: 2rem; }
+    .phone { width: 280px; background: #1c1c1e; border-radius: 44px; border: 6px solid #3a3a3c; padding: 14px 0 0; box-shadow: 0 40px 80px rgba(0,0,0,0.5); }
+    .notch { width: 100px; height: 28px; background: #1c1c1e; border-radius: 0 0 20px 20px; margin: 0 auto 10px; border: 6px solid #3a3a3c; border-top: none; }
+    .phone-screen { background: #f2f2f7; border-radius: 0 0 38px 38px; overflow: hidden; min-height: 480px; }
+    .phone-statusbar { background: #f2f2f7; padding: 4px 20px; display: flex; justify-content: space-between; font-size: 10px; font-weight: 600; color: #1c1c1e; }
+    .sms-header { background: #f2f2f7; padding: 8px 16px 6px; display: flex; align-items: center; gap: 10px; border-bottom: 0.5px solid rgba(0,0,0,0.1); }
+    .avatar { width: 36px; height: 36px; border-radius: 50%; background: #0f1e35; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; color: var(--gold); flex-shrink: 0; }
+    .sms-name { font-size: 13px; font-weight: 600; color: #1c1c1e; }
+    .sms-sub { font-size: 10px; color: #8e8e93; }
+    .bubbles { padding: 12px; display: flex; flex-direction: column; gap: 8px; }
+
+    /* Single bubble style: navy bg, gold label, right-aligned */
+    .bubble { max-width: 85%; padding: 10px 13px; border-radius: 18px; font-size: 12px; line-height: 1.5; animation: fadeUp 0.4s ease both; }
+    @keyframes fadeUp { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:none} }
+    .bubble.dd { background: var(--navy); color: #fff; border-bottom-right-radius: 4px; align-self: flex-end; }
+    .dd-label { font-size: 9px; color: var(--gold); font-weight: 600; text-align: right; margin-bottom: 4px; letter-spacing: 0.05em; text-transform: uppercase; }
+    .bubble.alert { background: #fff3cd; color: #7a5800; border: 1px solid #f0c040; align-self: stretch; border-radius: 12px; font-size: 11px; }
+    .alert-title { font-weight: 600; font-size: 11px; margin-bottom: 4px; display: flex; align-items: center; gap: 6px; }
+    .time-stamp { font-size: 9px; color: #aeaeb2; text-align: center; margin: 4px 0; }
+
+    .stats-section { background: var(--cream); }
+    .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; }
+    .stat-card { background: var(--surface); border: 0.5px solid var(--border); border-radius: 16px; padding: 2rem; text-align: center; }
+    .stat-num { font-family: 'DM Serif Display', serif; font-size: 3rem; color: var(--navy); display: block; line-height: 1; margin-bottom: 0.5rem; }
+    .stat-num span { color: var(--gold); }
+    .stat-label { font-size: 0.9rem; color: var(--muted); line-height: 1.4; }
+
+    .demos { background: var(--navy); padding: 5rem 2rem; }
+    .demos-label { font-size: 11px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gold); margin-bottom: 0.75rem; }
+    .demos h2 { font-family: 'DM Serif Display', serif; font-size: clamp(1.8rem, 3vw, 2.6rem); color: #fff; margin-bottom: 3rem; max-width: 520px; line-height: 1.2; }
+    .demo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: center; }
+    .demo-copy h3 { font-family: 'DM Serif Display', serif; font-size: 1.5rem; color: #fff; margin-bottom: 0.75rem; }
+    .demo-copy p { font-size: 0.95rem; color: rgba(255,255,255,0.55); line-height: 1.7; margin-bottom: 1.5rem; }
+    .feature-pills { display: flex; flex-wrap: wrap; gap: 8px; }
+    .pill { padding: 5px 13px; background: rgba(201,168,76,0.12); border: 0.5px solid rgba(201,168,76,0.25); border-radius: 100px; font-size: 12px; color: var(--gold-light); }
+
+    .demo-tabs { display: flex; gap: 6px; margin-bottom: 2.5rem; flex-wrap: wrap; }
+    .tab { padding: 9px 18px; font-size: 13px; font-weight: 500; color: var(--navy); border-radius: 8px; cursor: pointer; border: none; background: rgba(255,255,255,0.92); font-family: 'DM Sans', sans-serif; transition: all 0.15s; }
+    .tab:hover { background: #ffffff; }
+    .tab.active { background: var(--gold); color: var(--navy); }
+
+    .features-section { background: #fff; }
+    .section-label { font-size: 11px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gold); margin-bottom: 0.75rem; }
+    .features-section h2 { font-family: 'DM Serif Display', serif; font-size: clamp(1.8rem, 3vw, 2.6rem); color: var(--navy); margin-bottom: 3rem; max-width: 500px; }
+    .features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+    .feature-card { padding: 1.75rem; border-radius: 16px; border: 0.5px solid var(--border); background: var(--cream); transition: border-color 0.2s; }
+    .feature-card:hover { border-color: rgba(201,168,76,0.4); }
+    .feature-icon { width: 40px; height: 40px; background: rgba(15,30,53,0.07); border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-bottom: 1rem; font-size: 16px; }
+    .feature-card h4 { font-family: 'DM Serif Display', serif; font-size: 1.05rem; color: var(--navy); margin-bottom: 0.5rem; }
+    .feature-card p { font-size: 0.87rem; color: var(--muted); line-height: 1.6; }
+
+    @media (max-width: 768px) {
+      .hero-inner, .demo-grid { grid-template-columns: 1fr; }
+      .stats-grid, .features-grid { grid-template-columns: 1fr; }
+      .nav-links { display: none; }
+      .phone-wrap { padding: 2rem 0 0; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="nav">
+    <a class="nav-logo" href="#">Deal<span>Desk</span></a>
+    <div class="nav-links">
+      <a href="#how-it-works">How it works</a>
+      <a href="#features">Features</a>
+    </div>
+    <button class="nav-cta" onclick="document.getElementById('how-it-works').scrollIntoView({behavior:'smooth'})">Get early access</button>
+  </nav>
+
+  <div class="hero">
+    <div class="hero-inner">
+      <div class="hero-copy" style="padding-bottom: 5rem;">
+        <div class="badge"><div class="dot"></div> Now in early access</div>
+        <h1>Your AI assistant,<br>delivered in <em>iMessage.</em></h1>
+        <p>DealDesk sends your client summaries, urgency alerts, and drafted replies directly to your normal Messages app — no new tools, no new number, no new habits.</p>
+        <div class="imessage-pill"><div class="imessage-dot"></div> Works in iMessage &amp; SMS — nothing to install</div>
+        <div class="hero-cta">
+          <button class="btn-primary" onclick="document.getElementById('how-it-works').scrollIntoView({behavior:'smooth'})">Get early access →</button>
+          <span class="hero-note">Keep texting clients exactly how you do today.</span>
+        </div>
+      </div>
+      <div class="phone-wrap">
+        <div class="phone">
+          <div class="notch"></div>
+          <div class="phone-screen">
+            <div class="phone-statusbar"><span>9:41</span><span>●●●</span></div>
+            <div class="sms-header">
+              <div class="avatar">DD</div>
+              <div><div class="sms-name">DealDesk</div><div class="sms-sub">Your AI assistant · iMessage</div></div>
+            </div>
+            <div class="bubbles">
+              <div class="time-stamp">Today 8:02 AM</div>
+              <div class="bubble dd"><div class="dd-label">DealDesk</div>Morning digest ready. Here's your last 2 hours:</div>
+              <div class="bubble dd"><div class="dd-label">DealDesk</div>Sarah Kim asked about closing timeline. She seems anxious — worth a quick call.</div>
+              <div class="bubble dd"><div class="dd-label">DealDesk</div>Mike Torres wants to reschedule Thursday's showing to Friday.</div>
+              <div class="bubble alert"><div class="alert-title"><span>⚡</span>Urgent</div>The Garcias haven't replied in 48hrs. Last message was your counter-offer.</div>
+              <div class="bubble dd"><div class="dd-label">DealDesk · Suggested reply to Sarah</div>"Hey Sarah! Closing is still on track for the 22nd — title company confirmed. Anything else on your mind?"</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="stats-section">
+    <section>
+      <div class="container">
+        <div class="stats-grid">
+          <div class="stat-card">
+            <span class="stat-num">2<span>hr</span></span>
+            <span class="stat-label">Digest cadence — always know where every deal stands</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-num">0</span>
+            <span class="stat-label">New apps to install. Everything lands in your Messages app</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-num">47<span>%</span></span>
+            <span class="stat-label">Of deals lost due to slow follow-up. DealDesk fixes that</span>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div class="demos" id="how-it-works">
+    <section style="padding: 0;">
+      <div class="container">
+        <div class="demos-label">See it in action</div>
+        <h2>Every scenario, delivered straight to your Messages app.</h2>
+        <div class="demo-tabs">
+          <button class="tab active" onclick="showScene(0, this)">2-hr digest</button>
+          <button class="tab" onclick="showScene(1, this)">Urgency alert</button>
+          <button class="tab" onclick="showScene(2, this)">Suggested reply</button>
+          <button class="tab" onclick="showScene(3, this)">Deal tracker</button>
+          <button class="tab" onclick="showScene(4, this)">Lead outreach</button>
+        </div>
+        <div class="demo-grid">
+          <div class="demo-copy">
+            <h3 id="scene-title">The 2-hour digest</h3>
+            <p id="scene-desc">Every two hours, DealDesk texts you a plain-English summary of every client conversation — right in iMessage. No app to open, no dashboard to check.</p>
+            <div class="feature-pills" id="scene-pills">
+              <span class="pill">Delivered via iMessage</span>
+              <span class="pill">Sentiment scored</span>
+              <span class="pill">Priority ranked</span>
+            </div>
+          </div>
+          <div class="phone-wrap" style="padding: 0;">
+            <div class="phone">
+              <div class="notch"></div>
+              <div class="phone-screen">
+                <div class="phone-statusbar"><span>9:41</span><span>●●●</span></div>
+                <div class="sms-header">
+                  <div class="avatar">DD</div>
+                  <div><div class="sms-name">DealDesk</div><div class="sms-sub">iMessage · AI assistant</div></div>
+                </div>
+                <div class="bubbles" id="demo-bubbles"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div class="features-section" id="features">
+    <section>
+      <div class="container">
+        <div class="section-label">Everything included</div>
+        <h2>Built for how agents actually work.</h2>
+        <div class="features-grid">
+          <div class="feature-card"><div class="feature-icon">📋</div><h4>Deal stage tracking</h4><p>Lead → Active → Under Contract → Closed — updated automatically from your texts. No logging required.</p></div>
+          <div class="feature-card"><div class="feature-icon">🔇</div><h4>Silence detection</h4><p>Get nudged when an active client goes quiet. The deals you lose aren't from bad pitches — they're from forgotten follow-ups.</p></div>
+          <div class="feature-card"><div class="feature-icon">💬</div><h4>Suggested replies</h4><p>Every digest includes drafted responses for messages that need one. Copy, tweak, send in seconds.</p></div>
+          <div class="feature-card"><div class="feature-icon">📊</div><h4>Weekly report</h4><p>Every Sunday: how many clients you spoke to, who's engaged, who's cold, and your average response time.</p></div>
+          <div class="feature-card"><div class="feature-icon">🏠</div><h4>Expired listing hunter</h4><p>Automatically scrapes new expireds and FSBOs in your target zip codes and drafts personalized outreach overnight.</p></div>
+          <div class="feature-card"><div class="feature-icon">🤝</div><h4>Referral reactivation</h4><p>After closing, DealDesk schedules a 30-day check-in and referral ask so no past client goes cold.</p></div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const scenes = [
+      {
+        title: "The 2-hour digest",
+        desc: "Every two hours, DealDesk texts you a plain-English summary of every client conversation — right in iMessage. No app to open, no dashboard to check.",
+        pills: ["Delivered via iMessage", "Sentiment scored", "Priority ranked"],
+        bubbles: [
+          { type: 'time', text: 'Today 8:02 AM' },
+          { type: 'dd', label: 'DealDesk', text: "Morning digest ready. Here's your last 2 hours:" },
+          { type: 'dd', label: 'DealDesk', text: 'Sarah Kim asked about her closing date again. Seems anxious — sentiment: worried.' },
+          { type: 'dd', label: 'DealDesk', text: "Mike Torres wants to reschedule Thursday's showing to Friday at 2pm." },
+          { type: 'alert', title: '⚡ No reply in 48hrs', text: "The Garcias haven't responded since your counter-offer Tuesday." },
+        ]
+      },
+      {
+        title: "Urgency alert",
+        desc: "When something critical happens — a client threatening to walk, an offer accepted — DealDesk texts you immediately. No waiting for the next digest.",
+        pills: ["Texts you instantly", "Catches deal-killers", "Saves lost clients"],
+        bubbles: [
+          { type: 'time', text: 'Just now' },
+          { type: 'dd', label: 'DealDesk', text: 'Urgent — act now.' },
+          { type: 'alert', title: '🚨 Urgent', text: "Jennifer Liu just texted: \"I think we're going to go with another agent.\" You have a window." },
+          { type: 'dd', label: 'DealDesk · Suggested reply', text: '"Hey Jennifer, I completely understand. Before you decide, can we hop on a 10-minute call?"' },
+        ]
+      },
+      {
+        title: "Suggested reply",
+        desc: "When a client texts you, DealDesk notifies you and sends a ready-to-send draft reply — all in your Messages app. Just copy, tweak if needed, and send.",
+        pills: ["Draft arrives in iMessage", "One tap to copy", "Saves 20min/day"],
+        bubbles: [
+          { type: 'time', text: 'Today 11:15 AM' },
+          { type: 'dd', label: 'DealDesk', text: 'Sarah Kim texted you:' },
+          { type: 'dd', label: 'DealDesk · Sarah said', text: '"When exactly is our closing date? I need to tell my movers."' },
+          { type: 'dd', label: 'DealDesk · Suggested reply', text: '"Hey Sarah! You\'re all set for March 22nd at 10am at First American Title. I\'ll send a reminder the day before."' },
+        ]
+      },
+      {
+        title: "Deal stage tracker",
+        desc: "Text DealDesk 'pipeline' anytime and get a live snapshot of every deal — all delivered as a clean iMessage. No CRM login needed.",
+        pills: ["Text to request", "Auto-updated", "No CRM needed"],
+        bubbles: [
+          { type: 'time', text: 'Today · on demand' },
+          { type: 'dd', label: 'DealDesk', text: "Here's your current pipeline:" },
+          { type: 'dd', label: 'DealDesk · Active deals', text: 'Sarah Kim → Under Contract\nMike Torres → Showing Scheduled\nThe Garcias → Counter Offer Sent\nJennifer Liu → Lead (cold)' },
+          { type: 'dd', label: 'DealDesk · Closed this month', text: 'Johnson family · Mar 3\nDr. Patel · Mar 11' },
+        ]
+      },
+      {
+        title: "Expired listing outreach",
+        desc: "Every night DealDesk finds new expired listings in your zip codes, sends outreach, and texts you a morning report of who responded — all while you slept.",
+        pills: ["Morning report in iMessage", "Runs overnight", "Finds listings first"],
+        bubbles: [
+          { type: 'time', text: 'This morning · 7:14 AM' },
+          { type: 'dd', label: 'DealDesk', text: '7 expireds contacted in 33432 & 33444. 2 responded:' },
+          { type: 'alert', title: '📬 Hot lead', text: 'Linda W. (4BR on Palmetto) replied: "Yes, still interested in selling. Can we talk?"' },
+          { type: 'dd', label: 'DealDesk · Suggested reply to Linda', text: '"Hi Linda! Glad you reached out. Are you free for a quick call today?"' },
+        ]
+      }
+    ];
+
+    function showScene(idx, btn) {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      btn.classList.add('active');
+      const s = scenes[idx];
+      document.getElementById('scene-title').textContent = s.title;
+      document.getElementById('scene-desc').textContent = s.desc;
+      document.getElementById('scene-pills').innerHTML = s.pills.map(p => `<span class="pill">${p}</span>`).join('');
+      renderBubbles(s.bubbles);
+    }
+
+    function renderBubbles(bubbles) {
+      const container = document.getElementById('demo-bubbles');
+      container.innerHTML = '';
+      bubbles.forEach((b, i) => {
+        setTimeout(() => {
+          let el = document.createElement('div');
+          if (b.type === 'time') {
+            el.className = 'time-stamp';
+            el.textContent = b.text;
+          } else if (b.type === 'dd') {
+            el.className = 'bubble dd';
+            el.style.animationDelay = (i * 0.08) + 's';
+            el.innerHTML = `<div class="dd-label">${b.label}</div>${b.text.replace(/\n/g, '<br>')}`;
+          } else if (b.type === 'alert') {
+            el.className = 'bubble alert';
+            el.innerHTML = `<div class="alert-title">${b.title}</div>${b.text}`;
+          }
+          container.appendChild(el);
+        }, i * 130);
+      });
+    }
+
+    renderBubbles(scenes[0].bubbles);
+  </script>
+
+</body>
+</html>
